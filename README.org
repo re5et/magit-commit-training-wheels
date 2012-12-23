@@ -1,0 +1,15 @@
+* Commentary
+
+Helps you craft well formed commit messages with magit's log edit
+commit. Directives for what makes a well formed commit come from
+tpope: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.
+
+* Installation
+
+- install package from http://melpa.milkbox.net/#installing
+M-x package-install magit-commit-training-wheels
+
+* Usage
+
+(require 'magit-commit-training-wheels)
+(ad-activate 'magit-log-edit-commit)
