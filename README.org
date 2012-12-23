@@ -7,9 +7,10 @@ tpope: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.
 * Installation
 
 - install package from http://melpa.milkbox.net/#installing
-M-x package-install magit-commit-training-wheels
+- M-x package-install RET magit-commit-training-wheels RET
 
 * Usage
-
+```lisp
 (require 'magit-commit-training-wheels)
 (ad-activate 'magit-log-edit-commit)
+```
