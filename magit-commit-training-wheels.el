@@ -80,3 +80,4 @@
     (if ok-to-commit ad-do-it)))
 
 (provide 'magit-commit-training-wheels)
+;;; magit-commit-training-wheels.el
