@@ -29,14 +29,11 @@
 ;; commit.  Directives for what makes a well formed commit come from
 ;; tpope: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
 
-;;; Usage:
-
-;; (require 'magit-commit-training-wheels)
-;; (ad-activate 'magit-log-edit-commit)
-
 ;;; Code:
 
-(defadvice magit-log-edit-commit (around magit-commit-training-wheels)
+(require 'magit)
+
+(defadvice magit-log-edit-commit (around magit-commit-training-wheels activate)
   "Make sure we have a nice commit message."
   (let ((ok-to-commit t)
         (commit-problems nil)
