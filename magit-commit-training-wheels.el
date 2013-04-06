@@ -44,40 +44,35 @@
   "Make sure we have a nice commit message."
   (let ((ok-to-commit t)
         (commit-problems nil)
-        (case-fold-search nil)
-        (special-case (string-match "-- End of Magit header --" (buffer-string))))
+        (case-fold-search nil))
     (save-excursion
       (beginning-of-buffer)
-      (if special-case (goto-line 3))
-      (unless (string-match "[A-Z]" (string (char-after (point-min))))
-        (if (yes-or-no-p "Doesn't start with a capital letter, fix?")
-            (progn
-              (beginning-of-line)
-              (capitalize-word 1))))
+      (re-search-forward "^-- End of Magit header --\n" nil t)
+      (when (and (not (looking-at "\n"))
+		 (yes-or-no-p "First line doesn't start with a capital letter.  Fix?"))
+	(capitalize-word 1))
       (end-of-line)
-      (if (> (current-column) 50)
-          (add-to-list 'commit-problems "First line is too long (> 50 characters)."))
-      (if (> (count-lines (point) (point-max)) 0)
-          (progn
-            (forward-line)
-            (if (not (equal (point-at-bol) (point-at-eol)))
-                (if (yes-or-no-p "Doesn't have a blank line after the first, fix?")
-                    (progn
-                      (beginning-of-line)
-                      (newline))))
-            (while (not (equal (point) (point-max)))
-              (forward-line)
-              (end-of-line)
-              (if (> (current-column) 72)
-                  (add-to-list 'commit-problems "There are lines that are too long (> 72 characters)")))))
-      (if commit-problems
-          (catch 'break
-            (dolist (problem commit-problems)
-              (unless (yes-or-no-p (concat "WARNING: " problem " still commit?"))
-                (progn
-                  (setq ok-to-commit nil)
-                  (throw 'break nil)))))))
-    (if ok-to-commit ad-do-it)))
+      (when (> (current-column) 50)
+	(add-to-list 'commit-problems "First line is too long (> 50 characters)."))
+      (when (> (count-lines (point) (point-max)) 0)
+	(forward-line)
+	(when (and (not (equal (point-at-bol) (point-at-eol)))
+		   (yes-or-no-p "Doesn't have a blank line after the first.  Fix?"))
+	  (newline))
+	(while (not (equal (point) (point-max)))
+	  (forward-line)
+	  (end-of-line)
+	  (when (> (current-column) 72)
+	    (add-to-list 'commit-problems
+			 "There are lines that are too long (> 72 characters)"))))
+      (when commit-problems
+	(catch 'break
+	  (dolist (problem commit-problems)
+	    (unless (yes-or-no-p (concat problem "  Commit anyway?"))
+	      (setq ok-to-commit nil)
+	      (throw 'break nil))))))
+    (when ok-to-commit
+      ad-do-it)))
 
 (provide 'magit-commit-training-wheels)
-;;; magit-commit-training-wheels.el
+;;; magit-commit-training-wheels.el ends here
