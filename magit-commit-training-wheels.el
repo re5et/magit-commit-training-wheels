@@ -10,35 +10,31 @@
 
 ;; This file is NOT part of GNU Emacs.
 
-;; This is free software; you can redistribute it and/or modify it under
-;; the terms of the GNU General Public License as published by the Free
-;; Software Foundation; either version 3, or (at your option) any later
-;; version.
+;; This file is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 3, or (at your option)
+;; any later version.
 
-;; This file is distributed in the hope that it will be useful, but
-;; WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-;; General Public License for more details.
+;; This file is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
 
-;; You should have received a copy of the GNU General Public License
-;; along with Emacs; see the file COPYING, or type `C-h C-c'. If not,
-;; write to the Free Software Foundation at this address:
+;; For a full copy of the GNU General Public License
+;; see <http://www.gnu.org/licenses/>.
 
-;; Free Software Foundation
-;; 51 Franklin Street, Fifth Floor
-;; Boston, MA 02110-1301
-;; USA
-
-;;; Commentary
+;;; Commentary:
 
 ;; Helps you craft well formed commit messages with magit's log edit
-;; commit. Directives for what makes a well formed commit come from
+;; commit.  Directives for what makes a well formed commit come from
 ;; tpope: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
 
-;;; Usage
+;;; Usage:
 
 ;; (require 'magit-commit-training-wheels)
 ;; (ad-activate 'magit-log-edit-commit)
+
+;;; Code:
 
 (defadvice magit-log-edit-commit (around magit-commit-training-wheels)
   "Make sure we have a nice commit message."
