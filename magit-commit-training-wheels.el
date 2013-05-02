@@ -10,74 +10,62 @@
 
 ;; This file is NOT part of GNU Emacs.
 
-;; This is free software; you can redistribute it and/or modify it under
-;; the terms of the GNU General Public License as published by the Free
-;; Software Foundation; either version 3, or (at your option) any later
-;; version.
+;; This file is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 3, or (at your option)
+;; any later version.
 
-;; This file is distributed in the hope that it will be useful, but
-;; WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-;; General Public License for more details.
+;; This file is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
 
-;; You should have received a copy of the GNU General Public License
-;; along with Emacs; see the file COPYING, or type `C-h C-c'. If not,
-;; write to the Free Software Foundation at this address:
+;; For a full copy of the GNU General Public License
+;; see <http://www.gnu.org/licenses/>.
 
-;; Free Software Foundation
-;; 51 Franklin Street, Fifth Floor
-;; Boston, MA 02110-1301
-;; USA
-
-;;; Commentary
+;;; Commentary:
 
 ;; Helps you craft well formed commit messages with magit's log edit
-;; commit. Directives for what makes a well formed commit come from
+;; commit.  Directives for what makes a well formed commit come from
 ;; tpope: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
 
-;;; Usage
+;;; Code:
 
-;; (require 'magit-commit-training-wheels)
-;; (ad-activate 'magit-log-edit-commit)
+(require 'magit)
 
-(defadvice magit-log-edit-commit (around magit-commit-training-wheels)
+(defadvice magit-log-edit-commit (around magit-commit-training-wheels activate)
   "Make sure we have a nice commit message."
   (let ((ok-to-commit t)
         (commit-problems nil)
-        (case-fold-search nil)
-        (special-case (string-match "-- End of Magit header --" (buffer-string))))
+        (case-fold-search nil))
     (save-excursion
       (beginning-of-buffer)
-      (if special-case (goto-line 3))
-      (unless (string-match "[A-Z]" (string (char-after (point-min))))
-        (if (yes-or-no-p "Doesn't start with a capital letter, fix?")
-            (progn
-              (beginning-of-line)
-              (capitalize-word 1))))
+      (re-search-forward "^-- End of Magit header --\n" nil t)
+      (when (and (not (looking-at "\n"))
+		 (yes-or-no-p "First line doesn't start with a capital letter.  Fix?"))
+	(capitalize-word 1))
       (end-of-line)
-      (if (> (current-column) 50)
-          (add-to-list 'commit-problems "First line is too long (> 50 characters)."))
-      (if (> (count-lines (point) (point-max)) 0)
-          (progn
-            (forward-line)
-            (if (not (equal (point-at-bol) (point-at-eol)))
-                (if (yes-or-no-p "Doesn't have a blank line after the first, fix?")
-                    (progn
-                      (beginning-of-line)
-                      (newline))))
-            (while (not (equal (point) (point-max)))
-              (forward-line)
-              (end-of-line)
-              (if (> (current-column) 72)
-                  (add-to-list 'commit-problems "There are lines that are too long (> 72 characters)")))))
-      (if commit-problems
-          (catch 'break
-            (dolist (problem commit-problems)
-              (unless (yes-or-no-p (concat "WARNING: " problem " still commit?"))
-                (progn
-                  (setq ok-to-commit nil)
-                  (throw 'break nil)))))))
-    (if ok-to-commit ad-do-it)))
+      (when (> (current-column) 50)
+	(add-to-list 'commit-problems "First line is too long (> 50 characters)."))
+      (when (> (count-lines (point) (point-max)) 0)
+	(forward-line)
+	(when (and (not (equal (point-at-bol) (point-at-eol)))
+		   (yes-or-no-p "Doesn't have a blank line after the first.  Fix?"))
+	  (newline))
+	(while (not (equal (point) (point-max)))
+	  (forward-line)
+	  (end-of-line)
+	  (when (> (current-column) 72)
+	    (add-to-list 'commit-problems
+			 "There are lines that are too long (> 72 characters)"))))
+      (when commit-problems
+	(catch 'break
+	  (dolist (problem commit-problems)
+	    (unless (yes-or-no-p (concat problem "  Commit anyway?"))
+	      (setq ok-to-commit nil)
+	      (throw 'break nil))))))
+    (when ok-to-commit
+      ad-do-it)))
 
 (provide 'magit-commit-training-wheels)
-;;; magit-commit-training-wheels.el
+;;; magit-commit-training-wheels.el ends here
