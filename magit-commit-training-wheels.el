@@ -41,7 +41,7 @@
     (save-excursion
       (beginning-of-buffer)
       (re-search-forward "^-- End of Magit header --\n" nil t)
-      (when (and (not (looking-at "\n"))
+      (when (and (not (looking-at "[A-Z]"))
 		 (yes-or-no-p "First line doesn't start with a capital letter.  Fix?"))
 	(capitalize-word 1))
       (end-of-line)
