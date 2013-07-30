@@ -41,8 +41,8 @@
     (save-excursion
       (beginning-of-buffer)
       (re-search-forward "^-- End of Magit header --\n" nil t)
-      (when (and (not (looking-at "[A-Z]"))
-		 (yes-or-no-p "First line doesn't start with a capital letter.  Fix?"))
+      (when (and (looking-at "[a-z]")
+		 (yes-or-no-p "First line doesn't start with a capital letter.  Fix? "))
 	(capitalize-word 1))
       (end-of-line)
       (when (> (current-column) 50)
@@ -50,7 +50,7 @@
       (when (> (count-lines (point) (point-max)) 0)
 	(forward-line)
 	(when (and (not (equal (point-at-bol) (point-at-eol)))
-		   (yes-or-no-p "Doesn't have a blank line after the first.  Fix?"))
+		   (yes-or-no-p "Doesn't have a blank line after the first.  Fix? "))
 	  (newline))
 	(while (not (equal (point) (point-max)))
 	  (forward-line)
@@ -61,7 +61,7 @@
       (when commit-problems
 	(catch 'break
 	  (dolist (problem commit-problems)
-	    (unless (yes-or-no-p (concat problem "  Commit anyway?"))
+	    (unless (yes-or-no-p (concat problem "  Commit anyway? "))
 	      (setq ok-to-commit nil)
 	      (throw 'break nil))))))
     (when ok-to-commit
